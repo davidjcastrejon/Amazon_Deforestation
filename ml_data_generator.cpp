@@ -65,17 +65,17 @@ void ml_data_generator(int day,
                         double lon = prodes_geotransform[0] + (i * prodes_geotransform[1]);
                         double lat = prodes_geotransform[3] + (j * prodes_geotransform[5]);
 
-                        std::cout << "lat: " << lat << std::endl;
-                        std::cout<< "lon: " << lon << std::endl;
+                        //std::cout << "lat: " << lat << std::endl;
+                        //std::cout<< "lon: " << lon << std::endl;
 
                         // int x_pixel = (static_cast<int>((lon - appears_geotransform[0])/appears_geotransform[1])) - eco_top_left_x;
                         // int y_pixel = (static_cast<int>((lat - appears_geotransform[3])/appears_geotransform[5])) - eco_top_left_y;
                         int x_pixel = (static_cast<int>((lon - appears_geotransform[0])/appears_geotransform[1])) - eco_top_left_x;
                         int y_pixel = (static_cast<int>((lat - appears_geotransform[3])/appears_geotransform[5])) - eco_top_left_y;
 
-                        std::cout << "x_pixel:" << x_pixel << std::endl;
+                        //std::cout << "x_pixel:" << x_pixel << std::endl;
                         //std::cout << "cur_max_width:" << cur_max_width << std::endl;
-                        std::cout << "y_pixel:" << y_pixel << std::endl;
+                        //std::cout << "y_pixel:" << y_pixel << std::endl;
 
                         
                         //std::cout << "cur_max_height:" << cur_max_height << std::endl;
@@ -95,12 +95,13 @@ void ml_data_generator(int day,
                                 }
 
                                 double difference = static_cast<double>(cur[cur_index] - prev[cur_index]);
-                                
-                                // std::cout << "We in here!" << std::endl;
+
+                                //std::cout << "max_drop[cur_index]: " << max_drop[cur_index] << ", x, y: " << x_pixel << " " << y_pixel << std::endl;
+                                //std::cout << "cur_index: " << cur_index << std::endl;
 
                                 if (max_drop[cur_index] > difference) {
                                         max_drop[cur_index] = difference;
-                                        std::cout << "Difference: " << difference << ", max_drop[cur_index]: " << max_drop[cur_index] << ", cur_index: " << cur_index << std::endl;
+                                        // std::cout << "Difference: " << difference << ", max_drop[cur_index]: " << max_drop[cur_index] << ", cur_index: " << cur_index << std::endl;
                                 }
                                 // std::cout << "We in here!" << std::endl;
                                 if (day == 353) {
