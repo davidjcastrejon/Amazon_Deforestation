@@ -195,6 +195,10 @@ def analyze_ecoregion(ecoregion):
 
         print(f'ECO_TOP_RIGHT_x data type: {type(eco_top_right_x)}')
         print(f'ECO_BOTTOM_LEFT_y data type: {type(eco_bottom_left_y)}')
+
+        # Convert to int16 before passing to ctypes
+        prodes_data_int16 = prodes_data.astype(np.int16)
+        gfc_data_int16 = gfc_data.astype(np.int16)
         
         # Keepts track of day within the year
         day = 1
@@ -260,7 +264,7 @@ def analyze_ecoregion(ecoregion):
                     # int16
                     
                     # convert to c_types
-                    uint8_array = ctypes.POINTER(ctypes.c_uint8)
+                    # uint8_array = ctypes.POINTER(ctypes.c_uint8)
                     int16_array = ctypes.POINTER(ctypes.c_int16)
                     float64_array = ctypes.POINTER(ctypes.c_double)
  
@@ -269,8 +273,8 @@ def analyze_ecoregion(ecoregion):
                     prev_ptr = prev.ctypes.data_as(int16_array)
                     cur_ptr = cur.ctypes.data_as(int16_array)
                     max_drop_ptr = max_drop.ctypes.data_as(float64_array)
-                    prodes_data_ptr = prodes_data.ctypes.data_as(uint8_array)
-                    gfc_data_ptr = gfc_data.ctypes.data_as(uint8_array)
+                    prodes_data_ptr = prodes_data_int16.ctypes.data_as(int16_array)
+                    gfc_data_ptr = gfc_data_int16.ctypes.data_as(int16_array)
 
                     # Convert geo transforms to ctypes
                     prodes_geotransform_ptr = prodes_geotransform_array.ctypes.data_as(float64_array)
@@ -283,8 +287,8 @@ def analyze_ecoregion(ecoregion):
                     cur_width_ptr = ctypes.c_int(cur_width)
                     prodes_output_path_ptr = ctypes.c_char_p(prodes_output_path.encode('utf-8'))
                     gfc_output_path_ptr = ctypes.c_char_p(gfc_output_path.encode('utf-8'))
-                    # cur_max_width = ctypes.c_int(eco_top_right_x)
-                    # cur_max_height = ctypes.c_int(eco_bottom_left_y)
+                    eco_top_left_x_ptr = ctypes.c_int(eco_top_left_x)
+                    eco_top_left_y_ptr = ctypes.c_int(eco_top_left_y)
                     eco_top_right_x_ptr = ctypes.c_int(eco_top_right_x)
                     eco_bottom_left_y_ptr = ctypes.c_int(eco_bottom_left_y)
                     
@@ -295,7 +299,7 @@ def analyze_ecoregion(ecoregion):
                                          gfc_data_ptr, prodes_geotransform_ptr, appears_geotransform_ptr,
                                          prodes_height_ptr, prodes_width_ptr, cur_height_ptr, cur_width_ptr,
                                          prodes_output_path_ptr, gfc_output_path_ptr, eco_top_right_x_ptr,
-                                         eco_bottom_left_y_ptr)
+                                         eco_bottom_left_y_ptr, eco_top_left_x_ptr, eco_top_left_y_ptr)
                     
                      
                     prev = cur

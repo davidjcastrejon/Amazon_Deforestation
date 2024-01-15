@@ -21,7 +21,9 @@ void ml_data_generator(int day,
                        const char* prodes_output_path,
                        const char* gfc_output_path,
                        int eco_top_right_x,
-                       int eco_bottom_left_y
+                       int eco_bottom_left_y,
+                       int eco_top_left_x,
+                       int eco_top_left_y
                        ) {
 
         // Thank goodness for C++ :)
@@ -34,7 +36,7 @@ void ml_data_generator(int day,
         std::cout << "cur_width: " << cur_width << std::endl;
         std::cout << "eco_top_right_x:" << eco_top_right_x << std::endl;
         std::cout << "eco_bottom_left_y:" << eco_bottom_left_y << std::endl;
-        
+
         // Open CSV files for append
         std::ofstream prodes_output_file(prodes_output_path, std::ios::app);
         std::ofstream gfc_output_file(gfc_output_path, std::ios::app);
@@ -57,23 +59,31 @@ void ml_data_generator(int day,
 
         for (int i = 0; i < prodes_height; ++i) {
                 for (int j = 0; j < prodes_width; ++j) {
-                        int index = (i * prodes_width) + j;
-                        // Need to convert i,j to lat,lon to col,row within cur
+                        long long index = static_cast<long long>(i * prodes_width) + j;
+
+                        // Need to convert i,j to lat,lon
                         double lon = prodes_geotransform[0] + (i * prodes_geotransform[1]);
                         double lat = prodes_geotransform[3] + (j * prodes_geotransform[5]);
 
-                        int x_pixel = static_cast<int>((lon - appears_geotransform[0])/appears_geotransform[1]);
-                        int y_pixel = static_cast<int>((lat - appears_geotransform[3])/appears_geotransform[5]);
+                        std::cout << "lat: " << lat << std::endl;
+                        std::cout<< "lon: " << lon << std::endl;
 
-                        //std::cout << "x_pixel:" << x_pixel << std::endl;
+                        // int x_pixel = (static_cast<int>((lon - appears_geotransform[0])/appears_geotransform[1])) - eco_top_left_x;
+                        // int y_pixel = (static_cast<int>((lat - appears_geotransform[3])/appears_geotransform[5])) - eco_top_left_y;
+                        int x_pixel = (static_cast<int>((lon - appears_geotransform[0])/appears_geotransform[1])) - eco_top_left_x;
+                        int y_pixel = (static_cast<int>((lat - appears_geotransform[3])/appears_geotransform[5])) - eco_top_left_y;
+
+                        std::cout << "x_pixel:" << x_pixel << std::endl;
                         //std::cout << "cur_max_width:" << cur_max_width << std::endl;
-                        //std::cout << "y_pixel:" << y_pixel << std::endl;
+                        std::cout << "y_pixel:" << y_pixel << std::endl;
+
+                        
                         //std::cout << "cur_max_height:" << cur_max_height << std::endl;
                         //std::cout << "prodes_data[index]:" << prodes_data[index] << std::endl;
 
 
 
-                        if (x_pixel < eco_top_right_x && y_pixel < eco_bottom_left_y && (prodes_data[index] == 1 || prodes_data[index] == 0)){
+                        if (x_pixel >= 0 && x_pixel < eco_top_right_x && y_pixel >= 0 && y_pixel < eco_bottom_left_y && (prodes_data[index] == 1 || prodes_data[index] == 0)){
                                 int cur_index = x_pixel * cur_width + y_pixel;
 
                                 if (prodes_data[index] == 1) {
@@ -85,11 +95,12 @@ void ml_data_generator(int day,
                                 }
 
                                 double difference = static_cast<double>(cur[cur_index] - prev[cur_index]);
-                                std::cout << "We in here!" << std::endl;
+                                
+                                // std::cout << "We in here!" << std::endl;
 
-                                if (max_drop[cur_index] > difference && cur_index < (cur_height * cur_width)) {
-                                        std::cout << "Difference: " << difference << ", max_drop[cur_index]: " << max_drop[cur_index] << ", cur_index: " << cur_index << std::endl;
+                                if (max_drop[cur_index] > difference) {
                                         max_drop[cur_index] = difference;
+                                        std::cout << "Difference: " << difference << ", max_drop[cur_index]: " << max_drop[cur_index] << ", cur_index: " << cur_index << std::endl;
                                 }
                                 // std::cout << "We in here!" << std::endl;
                                 if (day == 353) {
@@ -104,6 +115,7 @@ void ml_data_generator(int day,
                         }
                         
                 }
+                
         }
 
         // Closing CSV files
